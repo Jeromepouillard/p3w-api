@@ -1,3 +1,5 @@
+
+// app/api/save/route.ts
 import { NextResponse } from "next/server";
 import { saveProject } from "../db";
 
@@ -9,7 +11,6 @@ function withCors(res: NextResponse) {
 }
 
 export async function OPTIONS() {
-  // Réponse au preflight CORS
   return withCors(new NextResponse(null, { status: 204 }));
 }
 
@@ -24,9 +25,14 @@ export async function POST(req: Request) {
       );
     }
 
-    saveProject(projectId, { chantier, intervenants });
+    saveProject(projectId, chantier, intervenants);
 
-    return withCors(NextResponse.json({ ok: true }));
+    return withCors(
+      NextResponse.json({
+        ok: true,
+        updatedAt: new Date().toISOString(),
+      })
+    );
   } catch (err) {
     return withCors(
       NextResponse.json({ error: "Invalid JSON" }, { status: 400 })

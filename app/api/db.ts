@@ -1,10 +1,20 @@
 // app/api/db.ts
-const memoryDb: Record<string, any> = {};
+type RecordP3W = {
+  chantier: any;
+  intervenants: any;
+  updatedAt: string;
+};
 
-export function saveProject(projectId: string, data: any) {
-  memoryDb[projectId] = data;
+const memoryDb: Record<string, RecordP3W> = {};
+
+export function saveProject(projectId: string, chantier: any, intervenants: any) {
+  memoryDb[projectId] = {
+    chantier,
+    intervenants,
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 export function loadProject(projectId: string) {
-  return memoryDb[projectId];
+  return memoryDb[projectId] || null;
 }

@@ -1,3 +1,4 @@
+// app/api/load/route.ts
 import { NextResponse } from "next/server";
 import { loadProject } from "../db";
 
@@ -8,8 +9,7 @@ function withCors(res: NextResponse) {
   return res;
 }
 
-export async function OPTIONS() { 
-  // Réponse au preflight CORS
+export async function OPTIONS() {
   return withCors(new NextResponse(null, { status: 204 }));
 }
 
@@ -31,5 +31,11 @@ export async function GET(req: Request) {
     );
   }
 
-  return withCors(NextResponse.json(record));
+  return withCors(
+    NextResponse.json({
+      ok: true,
+      projectId,
+      ...record,
+    })
+  );
 }
