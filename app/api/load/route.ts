@@ -1,6 +1,6 @@
 // app/api/load/route.ts
 import { NextResponse } from "next/server";
-import { loadProject } from "../../db";
+import { loadProject } from "../db";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
