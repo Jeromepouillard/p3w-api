@@ -1,20 +1,18 @@
 // app/api/db.ts
-type RecordP3W = {
-  chantier: any;
-  intervenants: any;
-  updatedAt: string;
-};
+import { Redis } from "@upstash/redis";
 
-const memoryDb: Record<string, RecordP3W> = {};
+// On initialise le client Redis avec les variables d'environnement Vercel
+export const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+});
 
-export function saveProject(projectId: string, chantier: any, intervenants: any) {
-  memoryDb[projectId] = {
-    chantier,
-    intervenants,
-    updatedAt: new Date().toISOString(),
-  };
+// Enregistre un projet (écrasement complet)
+export async function saveProject(projectId: string, data: any) {
+  await redis.set(`p3w:${projectId}`, data);
 }
 
-export function loadProject(projectId: string) {
-  return memoryDb[projectId] || null;
+// Charge un projet (retourne null si inexistant)
+export async function loadProject(projectId: string) {
+  return await redis.get(`p3w:${projectId}`);
 }
