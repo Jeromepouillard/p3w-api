@@ -1,7 +1,7 @@
 
 // app/api/save/route.ts
 import { NextResponse } from "next/server";
-import { saveProject } from "../../db";
+import { saveProject } from "../db";
 
 export async function POST(req: Request) {
   try {
