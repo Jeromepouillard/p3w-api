@@ -8,7 +8,7 @@ function withCors(res: NextResponse) {
   return res;
 }
 
-export async function OPTIONS() {
+export async function OPTIONS() { 
   // Réponse au preflight CORS
   return withCors(new NextResponse(null, { status: 204 }));
 }
