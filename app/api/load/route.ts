@@ -27,6 +27,7 @@ export async function GET(req: Request) {
       });
     }
 
+    // Correction de la syntaxe de la template string pour la clé
     const key = `p3w:${projectId}`;
     const raw = await redis.get<string>(key);
 
