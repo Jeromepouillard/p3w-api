@@ -3,7 +3,6 @@ import { redis } from "../db";
 
 export const dynamic = "force-dynamic";
 
-// CORS preflight
 export function OPTIONS() {
   return new Response(null, {
     status: 204,
@@ -28,7 +27,7 @@ export async function GET(req: Request) {
     }
 
     const key = `p3w:${projectId}`;
-    const raw = await redis.get<string>(key);
+    const raw = await redis.get(key); // 🔥 raw = OBJET DÉJÀ PARSÉ
 
     if (!raw) {
       return new Response(JSON.stringify({ error: "Not found" }), {
@@ -37,7 +36,8 @@ export async function GET(req: Request) {
       });
     }
 
-    const payload = JSON.parse(raw);
+    // 🔥 PLUS DE JSON.parse(raw)
+    const payload = raw;
 
     return new Response(JSON.stringify(payload), {
       status: 200,
