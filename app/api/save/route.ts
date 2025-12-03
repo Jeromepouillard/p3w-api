@@ -1,4 +1,3 @@
-
 // app/api/save/route.ts
 import { redis } from "../db";
 
@@ -28,7 +27,12 @@ export async function POST(req: Request) {
     }
 
     const key = `p3w:${body.projectId}`;
+
+    // 🔥 On sauvegarde le projet
     await redis.set(key, JSON.stringify(body));
+
+    // 🔥 On ajoute son ID à l’index global
+    await redis.sadd("p3w:index", body.projectId);
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
