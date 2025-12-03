@@ -17,41 +17,36 @@ export function OPTIONS() {
 
 export async function GET() {
   try {
-    // On scanne tous les keys p3w:* (compatible Upstash)
-    let cursor: any = 0;
-    const allKeys: string[] = [];
+    // 1) On lit la liste des ID dans le set "p3w:index"
+    const ids = await redis.smembers("p3w:index");
 
-    do {
-      const [nextCursor, keys] = await redis.scan(cursor, {
-        match: "p3w:*",
-        count: 100,
-      });
-
-      cursor = nextCursor as any;
-      allKeys.push(...(keys as string[]));
-    } while (cursor !== 0 && cursor !== "0");
-
-    if (allKeys.length === 0) {
+    if (!ids || ids.length === 0) {
       return new Response(JSON.stringify([]), {
         status: 200,
         headers: { "Access-Control-Allow-Origin": "*" },
       });
     }
 
+    // 2) Pour chaque ID, on va chercher le projet complet
     const projects = await Promise.all(
-      allKeys.map(async (key: string) => {
+      ids.map(async (projectId: string) => {
+        const key = `p3w:${projectId}`;
         const raw = await redis.get(key);
+
         if (!raw) return null;
 
-        try {
-          const data = JSON.parse(raw as string);
-          const projectId = key.replace("p3w:", "");
-          const nomProjet = data?.chantier?.nomProjet || "";
+        // Upstash renvoie déjà un objet → pas de JSON.parse
+        const data = raw as any;
 
-          return { projectId, nomProjet };
-        } catch {
-          return null;
-        }
+        const nomProjet =
+          data?.chantier?.nomProjet ||
+          data?.chantier?.projectName ||
+          "";
+
+        return {
+          projectId,
+          nomProjet,
+        };
       })
     );
 
